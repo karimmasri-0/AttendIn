@@ -16,15 +16,14 @@ function Auth() {
     console.log(password);
   };
   return (
-    <div
-      className="d-flex justify-content-center"
-      style={{ marginTop: "100px" }}
-    >
+    <div className="d-flex justify-content-center m-6p">
       <Card className="shadow px-4">
         <Card.Body>
-          <div className="d-flex justify-content-center">
-            <Card.Img src={logo} className="m-2" style={{ width: "120px" }} />
-          </div>
+          <Card.Img
+            src={logo}
+            className="m-2 mx-auto d-block"
+            style={{ width: "120px" }}
+          />
           <Form>
             <Form.Group className="my-3">
               <Form.Control
@@ -42,14 +41,8 @@ function Auth() {
                 onChange={handlePassword}
               ></Form.Control>
             </Form.Group>
-            <Form.Group>
-              {/* <Form.Control type="checkbox" style={{ width: "20px" }} /> */}
-            </Form.Group>
-            <div className="d-flex justify-content-center">
-              <Button
-                type="submit"
-                style={{ borderColor: "#29a54d", backgroundColor: "#29a54d" }}
-              >
+            <div className="text-center">
+              <Button type="submit" className="attendin-btn">
                 Login
               </Button>
             </div>
