@@ -1,10 +1,11 @@
 import Auth from "./components/Auth/Auth";
-import AdminNavBar from "./admin/components/AdminNavBar";
+import AdminSideBar from "./admin/components/AdminSideBar";
 import TeacherNavBar from "./teacher/components/TeacherNavBar";
 import Student from "./student";
 import Display from "./admin/components/Display";
 
 import "./App.css";
+import { NavBar } from "./components/Auth/NavBar";
 
 function App() {
   // const token = false;
@@ -18,15 +19,18 @@ function App() {
         <Auth />
       ) : role === "admin" ? (
         <>
-          <AdminNavBar />
+          <NavBar />
+          {/* <AdminSideBar /> */}
           <Display />
         </>
       ) : role === "teacher" ? (
         <>
+          <NavBar />
           <TeacherNavBar />
         </>
       ) : role === "student" ? (
         <>
+          <NavBar />
           <Student />
         </>
       ) : null}

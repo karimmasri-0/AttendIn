@@ -2,6 +2,9 @@ import React from "react";
 import { useState } from "react";
 import { FaBars, FaUserCheck } from "react-icons/fa";
 import SideBar from "./SideBar";
+import icon from "../../assets/admin.png";
+import logo from "../../img/logo/attendin.png";
+
 export const NavBar = ({ children }) => {
   const [isOpen, setIsOpen] = useState(true);
   const toggle = () => setIsOpen(!isOpen);
@@ -15,7 +18,7 @@ export const NavBar = ({ children }) => {
           display: isOpen ? "flex" : "none",
         }}
       >
-        <h1 className="logo">Attendin</h1>
+        <img src={logo} />
         <FaUserCheck size={30} className="my-1 ms-2" />
       </div>
       <div
@@ -26,11 +29,10 @@ export const NavBar = ({ children }) => {
           <FaBars size={20} onClick={toggle} />
         </div>
         <div className="nav-links">
-          <img  src={require("../assets/admin.png")}  width={40}  height={40} className="admin-logo" />
+          <img src={icon} width={40} height={40} className="admin-logo" />
           <span className="ms-3">Administrator</span>
         </div>
       </div>
-
       <SideBar open={isOpen} children={children} />
     </>
   );

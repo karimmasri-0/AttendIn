@@ -2,10 +2,9 @@ import React from "react";
 import { MdSchedule } from "react-icons/md";
 import { BiSpreadsheet } from "react-icons/bi";
 import { FaTh, FaUserAlt, FaChalkboardTeacher } from "react-icons/fa";
-
 import { NavLink } from "react-router-dom";
 
-const Sidebar = ({ children, open }) => {
+const AdminSidebar = ({ children, open }) => {
   const sidebarItem = [
     {
       path: "/",
@@ -62,4 +61,4 @@ const Sidebar = ({ children, open }) => {
   );
 };
 
-export default Sidebar;
+export default AdminSidebar;
