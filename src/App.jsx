@@ -6,12 +6,13 @@ import "./App.css";
 
 function App() {
   // const token = false;
-  const token = true;
+  const token = false;
   // const role = "admin";
   // const role = "teacher";
   const role = "student";
   return (
     <div>
+
       {!token ? (
         <Auth />
       ) : role === "admin" ? (

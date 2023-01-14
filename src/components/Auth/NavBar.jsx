@@ -7,7 +7,7 @@ export const NavBar = ({ children }) => {
   const toggle = () => setIsOpen(!isOpen);
   return (
     <>
-      <div
+      <div 
         className="nav-left"
         style={{
           width: isOpen ? "300px" : "0px",

@@ -16,8 +16,8 @@ function Auth() {
     console.log(password);
   };
   return (
-    <div className="d-flex justify-content-center m-6p">
-      <Card className="shadow px-4">
+    <div className="d-flex justify-content-center ">
+      <Card className="shadow px-4 m-6p">
         <Card.Body>
           <Card.Img
             src={logo}
