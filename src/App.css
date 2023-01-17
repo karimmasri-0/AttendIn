@@ -1,9 +1,131 @@
 .form-control:focus {
-  border-color: #29a54d !important;
-  box-shadow: 0 0 5px #2f8147 !important;
+    border-color: #29a54d !important;
+    box-shadow: 0 0 5px #2f8147 !important;
 }
 
 .attendin-btn {
-  border-color: #29a54d !important;
-  background-color: #29a54d !important;
+    border-color: #29a54d !important;
+    background-color: #29a54d !important;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+html::-webkit-scrollbar {
+    width: .8rem;
+}
+
+html::-webkit-scrollbar-track {
+    background: #ddd;
+}
+
+html::-webkit-scrollbar-thumb {
+    background: #355e41;
+}
+
+.sd-container {
+    display: flex;
+}
+
+main {
+    width: 100%;
+    padding: 100px;
+}
+
+.sidebar {
+    padding-top: 84px;
+    background: #355e41;
+    color: #fff;
+    height: 1000vh;
+    width: 300px;
+    transition: all 0.5s;
+}
+
+.logo {
+    font-size: 30px;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+}
+
+.bars {
+    display: flex;
+    font-size: 25px;
+    margin-left: 50px;
+}
+
+.link {
+    display: flex;
+    color: #fff;
+    background-color: transparent;
+    padding: 10px 15px;
+    gap: 15px;
+    transition: all 0.5s;
+    text-decoration: none;
+}
+
+.link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    transition: all 0.5s;
+}
+
+.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.icon,
+.link_text {
+    font-size: 20px;
+}
+
+
+/***************NavBar******************/
+
+
+/* .navbar {
+  position: fixed;
+  background-color: #355e41;
+  color: white;
+  padding: 20px;
+  width: 100%;
+} */
+
+.nav-left {
+    position: fixed;
+    background-color: #355e41;
+    display: flex;
+    color: white;
+    padding: 20px;
+    width: 0px;
+    height: 80px;
+    z-index: 2;
+    transition: 0.5s;
+}
+
+@media(max-width:450px) {
+    .nav-left {
+        display: none !important;
+    }
+    .nav-right {
+        padding-left: 20px !important;
+    }
+}
+
+.nav-right {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    background-color: #355e41;
+    color: white;
+    padding: 20px;
+    padding-left: 300px;
+    width: 100%;
+    /* margin-left: 19%; */
+    z-index: 1;
 }
