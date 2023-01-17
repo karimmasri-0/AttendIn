@@ -5,7 +5,10 @@ import { FaTh, FaUserAlt, FaChalkboardTeacher } from "react-icons/fa";
 
 import { NavLink } from "react-router-dom";
 
-const Sidebar = ({ children, open }) => {
+const Sidebar = ({
+  children,
+  open,
+}) => {
   const sidebarItem = [
     {
       path: "/",
@@ -38,7 +41,7 @@ const Sidebar = ({ children, open }) => {
   return (
     <>
       <div className="sd-container">
-        <div style={{ width: open ? "300px" : "50px" }} className="sidebar">
+        <div style={{ width: open ? "24%" : "50px" }} className="sidebar">
           {sidebarItem.map((item, index) => (
             <NavLink
               to={item.path}

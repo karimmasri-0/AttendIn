@@ -6,6 +6,7 @@ body {
   --bs-body-font-family: 'Poppins';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* color: rgb(75 85 99); */
 }
 
 code {
