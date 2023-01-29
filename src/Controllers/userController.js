@@ -1,7 +1,5 @@
 const User = require('../Models/user');
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-
 exports.getAllTeachers = (req,res) => {
     User.allTeachers((err, data) => {
         console.log(err);
@@ -62,7 +60,7 @@ exports.createAccount = async (req, res) => {
     }
     let salt = await bcrypt.genSalt(10);
     let hashedPassword = await bcrypt.hash(req.body.Password, salt);
-    const user = new User(
+    const user = await new User(
         null,
         req.body.FirstName,
         req.body.MiddleName,
@@ -89,7 +87,7 @@ exports.updateStudent = async (req, res) => {
     }else{
     let salt = await bcrypt.genSalt(10);
     let hashedPassword = await bcrypt.hash(req.body.Password, salt);
-    const user = new User(
+    const user = await new User(
         req.params.id,
         req.body.FirstName,
         req.body.MiddleName,
@@ -123,7 +121,7 @@ exports.updateTeacher = async (req, res) => {
     }else{
     let salt = await bcrypt.genSalt(10);
     let hashedPassword = await bcrypt.hash(req.body.Password, salt);
-    const user = new User(
+    const user =await new User(
         req.params.id,
         req.body.FirstName,
         req.body.MiddleName,
@@ -163,35 +161,6 @@ exports.deleteAccount = (req, res) => {
         } else res.send({ message: `User was deleted successfully!` });
     });
 };
-exports.login = (req, res) => {
-    const { Username, Password } = req.body;
-    User.allUsers(async (err, data) => {
-        const user = data.find(r => r.Username == Username);
-        console.log(user);
-        if (!user) {
-            res.json({ message: 'Incorrect Username' })
-        } else {
-            let isMatch = await bcrypt.compare(Password, user.Password);
-            if (!isMatch) {
-                res.json({ message: 'Password dosn\'t Match' })
-
-            } else {
-                let payload = { id: user.id };
-                let access_token = jwt.sign(payload, "huss123", { expiresIn: 10000 });
-                res.json({
-                    message: true,
-                    data: {
-                        id: user.id,
-                        Role: user.Role,
-                        Username: user.Username,
-                        FirstName: user.FirstName
-                    }, access_token: access_token
-                });
-            }
-        }
-
-    });
-};
 
 const createAdmin = () => {
     User.allUsers(async (err, data) => {
@@ -200,7 +169,8 @@ const createAdmin = () => {
                 message: err.message || "Some error occurred while retrieving Users."
             });
         }
-        if (!data || data.length == 0) {
+        const admin = data.find(r=>r.Role==0)
+        if (!admin) {
             let salt = await bcrypt.genSalt(10);
             let hashedPassword = await bcrypt.hash('123456', salt);
             const user = new User(
