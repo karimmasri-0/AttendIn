@@ -1,4 +1,3 @@
-const jwt_decode = require("jwt-decode");
 const jwt = require("jsonwebtoken");
 const verifyToken = (req, res, next) => {
     const access_token =
