@@ -28,7 +28,7 @@ class User {
             result(null, res);
         })
 
-    }
+    } as
     static findTeacherById(id, result) {
         connection.query("SELECT * FROM user WHERE id = ? and Role=1", id, (err, res) => {
             if (err) {

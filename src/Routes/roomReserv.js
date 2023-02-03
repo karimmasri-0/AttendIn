@@ -5,7 +5,7 @@ const roomReservation = require('../Controllers/roomReservController');
 router.use(adminMiddleware);
 router.get('/', roomReservation.getAllRoomReservations);
 router.get('/:id', roomReservation.getSingleRoomReservation);
-router.post('/', roomReservation.createRoomReservation);
+// router.post('/', roomReservation.createRoomReservation);
 router.delete('/:id',roomReservation.deleteRoomReservation);
 module.exports = router;
     

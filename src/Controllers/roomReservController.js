@@ -26,7 +26,34 @@ exports.getSingleRoomReservation = (req, res) => {
         } else res.send(data);
     })
 }
-
+exports.createRoomReservation = async (req, res) => {
+    if (!req.body) {
+        res.status(400).send({
+            message: "Content can not be empty!"
+        });
+    }
+    const roomres = await new RoomReservation(
+        null,
+        req.body.RoomId,
+        req.body.CourseId,
+        req.body.Date,
+        req.body.STime,
+        req.body.ETime
+    )
+    if (roomres.STime === roomres.ETime) {
+        res.json("Start Time and End Time Cannot be equal");
+    }
+    else{
+    RoomReservation.create(roomres, (err, data) => {
+        if (err) {
+            res.status(500).send({
+                message: err.message || "Some error occurred while creating Roome Reservation."
+            });
+        }
+        else res.send({ message: "Roome Reservation Created Successfully" });
+    });
+}
+};
 exports.deleteRoomReservation = (req, res) => {
     RoomReservation.remove(req.params.id, (err, data) => {
         if (err) {
