@@ -12,11 +12,11 @@ class Attendace{
                 result(err, null);
                 return;
             }
-            result(null, user);
+            result(null, attendance);
         });
     }
         static allAttendance(result) {
-        connection.query("SELECT COUNT(attendance.id) as StudentNB,room.name as room,course.name as course FROM attendance RIGHT JOIN roomreservation ON ", (err, res) => {
+        connection.query("SELECT * FROM attendance", (err, res) => {
             if (err) {
                 result(null, err);
                 return;
