@@ -6,8 +6,32 @@ import { KeyboardArrowRight } from '@material-ui/icons';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
+import { makeStyles } from "@material-ui/core/styles";
 import Select from '@mui/material/Select';
 import { useTheme } from '@mui/material/styles';
+
+const useStyles = makeStyles({
+    root: {
+        // input label when focused
+        "& label.Mui-focused": {
+            color: "#3ea175"
+        },
+        // focused color for input with variant='standard'
+        "& .MuiInput-underline:after": {
+            borderBottomColor: "#3ea175"
+        },
+        // focused color for input with variant='filled'
+        "& .MuiFilledInput-underline:after": {
+            borderBottomColor: "#3ea175"
+        },
+        // focused color for input with variant='outlined'
+        "& .MuiOutlinedInput-root": {
+            "&.Mui-focused fieldset": {
+                borderColor: "#3ea175"
+            }
+        }
+    }
+});
 
 
 const ITEM_HEIGHT = 48;
@@ -52,7 +76,7 @@ function getStyles(name, personName, theme) {
 
 
 const AddRoomreser = () => {
-
+    const classes = useStyles();
     const handleSubmit = (e) => {
         e.preventDefault();
         const roomreser = { roomName, courseName, date, startTime, endTime };
@@ -107,13 +131,13 @@ const AddRoomreser = () => {
                         variant="h6">
                         Add Roomreservation
                     </Typography>
-                    <FormControl fullWidth style={{ marginTop: "10px", marginBottom: "10px" }}>
-                        <InputLabel id="demo-simple-select-label">Rooms Name</InputLabel>
+                    <FormControl className={classes.root} fullWidth style={{ marginTop: "10px", marginBottom: "10px" }}>
+                        <InputLabel id="demo-simple-select-label">Rooms</InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={roomName}
-                            label="Age"
+                            label="rooms"
                             onChange={handleChangeRoomSelector}
                             MenuProps={MenuProps}
                         >
@@ -128,13 +152,13 @@ const AddRoomreser = () => {
                             ))}
                         </Select>
                     </FormControl>
-                    <FormControl fullWidth style={{ marginTop: "10px", marginBottom: "10px" }}>
-                        <InputLabel id="demo-simple-select-label">Courses Name</InputLabel>
+                    <FormControl className={classes.root} fullWidth style={{ marginTop: "10px", marginBottom: "10px" }}>
+                        <InputLabel id="demo-simple-select-label">Courses</InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
                             id="demo-simple-select"
                             value={courseName}
-                            label="Age"
+                            label="courses"
                             onChange={handleChangeCourseSelector}
                             MenuProps={MenuProps}
                         >
@@ -153,6 +177,7 @@ const AddRoomreser = () => {
                         id="date"
                         label="Date"
                         type="date"
+                        className={classes.root}
                         style={{
                             width: '100%',
                             marginTop: '10px',
@@ -169,6 +194,7 @@ const AddRoomreser = () => {
                         label="Start Time"
                         type="time"
                         defaultValue="07:30"
+                        className={classes.root}
                         style={{
                             width: '100%',
                             marginTop: '10px',
@@ -187,6 +213,7 @@ const AddRoomreser = () => {
                         label="End Time"
                         type="time"
                         defaultValue="07:30"
+                        className={classes.root}
                         style={{
                             width: '100%',
                             marginTop: '10px',

@@ -24,7 +24,7 @@ img{
     margin-bottom: 20px;
 }
 
-label{
+.label{
     font-size: 11px;
     margin-bottom: 5px;
     font-weight: bold;
@@ -35,7 +35,7 @@ label{
     justify-content: space-between;
 }
 
-input{
+.input{
     width: 280px;
     height: 30px;
     border-radius: 5px;
@@ -46,7 +46,7 @@ input{
     box-shadow: 0 0px 7px #F0F1F7;
 }
 
-button{
+.button{
     width: 300px;
     height: 35px;
     border-radius: 5px;
@@ -59,16 +59,16 @@ button{
     transition: 0.3s ease all;
 }
 
-button:hover{
+.button:hover{
     background-color: #2C6A3D;
 }
 
-span{
+.span{
     font-size: 10px;
     color: #9FA2B4;
     cursor: pointer;
 }
 
-input:focus{
+.input:focus{
     outline: none;
 }

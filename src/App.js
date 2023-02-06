@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Login from './auth/Login';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Navbar from './components/admin/navbar/Navbar';
 import Sidebar from './components/admin/sidebar/Sidebar';
 import Students from './components/admin/students/Students';
@@ -15,10 +15,16 @@ import EditStudents from './components/admin/Edit/EditStudents/EditStudents';
 import EditTeachers from './components/admin/Edit/EditTeachers/EditTeachers';
 import EditRooms from './components/admin/Edit/EditRooms/EditRooms';
 import EditRoomreser from './components/admin/Edit/EditRoomreservation/EditRoomreser';
+import TeacherNavbar from './components/teachers/navbar/TeacherNavbar';
+import TeacherSidebar from './components/teachers/sidebar/TeacherSidebar';
+import TeacherDashboard from './components/teachers/TeacherDashboard';
+import Monitoring from './components/admin/monitoring/Monitoring';
+import jwt_decode from "jwt-decode";
 import './App.css';
 
 function App() {
-  const [logged, setLogged] = useState(true);
+  const [token, setToken] = useState();
+  const [role, setRole] = useState()
   const [sidebarOpen, setsidebarOpen] = useState(false);
   const openSidebar = () => {
     setsidebarOpen(true);
@@ -26,14 +32,25 @@ function App() {
   const closeSidebar = () => {
     setsidebarOpen(false);
   };
+
+  useEffect(() => {
+    setToken(localStorage.getItem('token'));
+    if (token) {
+      const decoded = jwt_decode(token);
+      setRole(decoded.Role);
+    }
+  }, [token]);
+
+
   return (
     <>
       {
-        logged ? (
+        token ? ( role === 0 ? (
           <div className='container'>
-            <Navbar sidebarOpen={sidebarOpen} openSidebar={openSidebar}/>
+            <Navbar sidebarOpen={sidebarOpen} openSidebar={openSidebar} />
             <Routes>
               <Route path="/" element={<Students />} />
+              <Route path="/monitoring" element={<Monitoring />} />
               <Route path="/teachers" element={<Teachers />} />
               <Route path="/rooms" element={<Rooms />} />
               <Route path="/roomreservation" element={<Roomreser />} />
@@ -41,19 +58,26 @@ function App() {
               <Route path="/addteachers" element={<AddTeachers />} />
               <Route path="/addrooms" element={<AddRooms />} />
               <Route path="/addroomreservation" element={<AddRoomreser />} />
-              <Route path="/editstudents" element={<EditStudents />} />
-              <Route path="/editteachers" element={<EditTeachers />} />
-              <Route path="/editrooms" element={<EditRooms />} />
-              <Route path="/editroomreservation" element={<EditRoomreser />} />
+              <Route path="/editstudents/:id" element={<EditStudents />} />
+              <Route path="/editteachers/:id" element={<EditTeachers />} />
+              <Route path="/editrooms/:id" element={<EditRooms />} />
+              <Route path="/editroomreservation/:id" element={<EditRoomreser />} />
             </Routes>
             <Sidebar sidebarOpen={sidebarOpen} closeSidebar={closeSidebar} />
           </div>
-        ) : (
+        ): role === 1 ? (
+          <div className='container'>
+            <TeacherNavbar sidebarOpen={sidebarOpen} openSidebar={openSidebar} />
+            <Routes>
+              <Route path="/" element={<TeacherDashboard />} />
+            </Routes>
+            <TeacherSidebar sidebarOpen={sidebarOpen} closeSidebar={closeSidebar} />
+          </div>
+        ): null ) : (
           <Routes>
             <Route path="/" exact element={<Login />} />
           </Routes>
         )
-
       }
     </>
   );

@@ -1,102 +1,215 @@
 import './EditRoomreser.css';
-import React from 'react'
 import TextField from '@mui/material/TextField';
 import { Button, Container, Typography } from '@mui/material';
 import { KeyboardArrowRight } from '@material-ui/icons';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import { useTheme } from '@mui/material/styles';
+import { makeStyles } from "@material-ui/core/styles";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useEffect, useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
+const useStyles = makeStyles({
+    root: {
+        // input label when focused
+        "& label.Mui-focused": {
+            color: "#3ea175"
         },
-    },
-};
-
-const rooms = [
-    'Maths Room',
-    'Phy Room',
-    'Web Room',
-    'Mobile Room',
-    'Arabic Room',
-    'Eng Room',
-    'Cult Room',
-];
-
-const courses = [
-    'CSCI250',
-    'CSCI200',
-    'Eng101',
-    'Eng151',
-    'Arab101',
-    'Phy101',
-    'CSCI390',
-];
-
-function getStyles(name, personName, theme) {
-    return {
-        fontWeight:
-            personName.indexOf(name) === -1
-                ? theme.typography.fontWeightRegular
-                : theme.typography.fontWeightMedium,
-    };
-}
-
+        // focused color for input with variant='standard'
+        "& .MuiInput-underline:after": {
+            borderBottomColor: "#3ea175"
+        },
+        // focused color for input with variant='filled'
+        "& .MuiFilledInput-underline:after": {
+            borderBottomColor: "#3ea175"
+        },
+        // focused color for input with variant='outlined'
+        "& .MuiOutlinedInput-root": {
+            "&.Mui-focused fieldset": {
+                borderColor: "#3ea175"
+            }
+        }
+    }
+});
 
 const EditRoomreser = () => {
+    const token = localStorage.getItem("token");
+    const classes = useStyles();
+    const navigate = useNavigate();
+    const params = useParams();
+    const [formValues, setFormValues] = useState({
+        room: {
+            value: '',
+            error: false,
+            errorMessage: 'You must enter a Room Name'
+        },
+        course: {
+            value: '',
+            error: false,
+            errorMessage: 'You must enter a Course Name'
+        },
+        date: {
+            value: '',
+            error: false,
+            errorMessage: 'You must enter a Date'
+        },
+        startTime: {
+            value: '',
+            error: false,
+            errorMessage: 'You must enter a Start Time'
+        },
+        endTime: {
+            value: '',
+            error: false,
+            errorMessage: 'You must enter a End Time'
+        },
+    });
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormValues({
+            ...formValues,
+            [name]: {
+                ...formValues[name],
+                value
+            }
+        })
+    }
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const roomreser = { roomName, courseName, date, startTime, endTime };
-        console.log(roomreser);
+
+        const formFields = Object.keys(formValues);
+        let newFormValues = { ...formValues }
+
+        for (let index = 0; index < formFields.length; index++) {
+            const currentField = formFields[index];
+            const currentValue = formValues[currentField].value;
+
+            if (currentValue === '') {
+                newFormValues = {
+                    ...newFormValues,
+                    [currentField]: {
+                        ...newFormValues[currentField],
+                        error: true
+                    }
+                }
+            }
+
+        }
+        setFormValues(newFormValues)
     }
 
-    const theme = useTheme();
-    const [roomName, setRoomName] = React.useState([]);
-    const [courseName, setCourseName] = React.useState([]);
-    const [date, setDate] = React.useState("");
-    const [startTime, setStartTime] = React.useState("");
-    const [endTime, setEndTime] = React.useState("");
+    useEffect(() => {
+        axios.get(`http://localhost:8000/roomReservations/${params.id}`, {
+            headers: {
+                "x-access-token": token
+            }
+        }).then((response) => {
+            if (response.data.message === "Token expired") {
+                localStorage.removeItem("token");
+                window.location.reload();
+            } else if (response.data.message === "Not Allowed") {
+                localStorage.removeItem("token");
+                window.location.reload();
+            } else {
+                setFormValues({
+                    room: {
+                        value: response.data.Room,
+                        error: false,
+                        errorMessage: 'You must enter a Room Name'
+                    },
+                    course: {
+                        value: response.data.Course,
+                        error: false,
+                        errorMessage: 'You must enter a Course Name'
+                    },
+                    date: {
+                        value: response.data.Date,
+                        error: false,
+                        errorMessage: 'You must enter a Date'
+                    },
+                    startTime: {
+                        value: response.data.STime,
+                        error: false,
+                        errorMessage: 'You must enter a Start Time'
+                    },
+                    endTime: {
+                        value: response.data.ETime,
+                        error: false,
+                        errorMessage: 'You must enter a End Time'
+                    },
+                })
+            }
+        }).catch((error) => {
+            if (error.response.data.message === "Token expired") {
+                localStorage.removeItem("token");
+                window.location.reload();
+                navigate('/');
+            } else if (error.response.data.message === "Not Allowed") {
+                localStorage.removeItem("token");
+                window.location.reload();
+                navigate('/');
+            }
+        })
+    }, [token, params.id])
 
-    const handleChangeRoomSelector = (event) => {
-        const {
-            target: { value },
-        } = event;
-        setRoomName(
-            // On autofill we get a stringified value.
-            typeof value === 'string' ? value.split(',') : value,
-        );
-    };
+    const updateRoomreser = () => {
+        axios.put(`http://localhost:8000/roomReservations/${params.id}`, {
+            Name: formValues.roomName.value,
+            Description: formValues.roomDescription.value,
+            Capacity: formValues.roomCapacity.value,
+        }, {
+            headers: {
+                "x-access-token": token
+            }
+        }).then((response) => {
+            if (response.data.id) {
+                updateNotify();
+                setTimeout(() => {
+                    navigate('/rooms')
+                }, 2000)
+            } else if (response.data.message === "Not found Room with id") {
+                toast.error("Error updating Roomreservation with id", {
+                    position: "top-right",
+                    autoClose: 1000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
+            } else if (response.data.message === "Token expired") {
+                localStorage.removeItem("token");
+                window.location.reload();
+            } else if (response.data.message === "Not Allowed") {
+                localStorage.removeItem("token");
+                window.location.reload();
+            }
+        }).catch((error) => {
+            if (error.response.data.message === "Token expired") {
+                localStorage.removeItem("token");
+                window.location.reload();
+                navigate('/');
+            } else if (error.response.data.message === "Not Allowed") {
+                localStorage.removeItem("token");
+                window.location.reload();
+                navigate('/');
+            }
+        })
+    }
 
-    const handleChangeCourseSelector = (event) => {
-        const {
-            target: { value },
-        } = event;
-        setCourseName(
-            // On autofill we get a stringified value.
-            typeof value === 'string' ? value.split(',') : value,
-        );
-    };
-
-    const handleChangeDate = (event) => {
-        setDate(event.target.value);
-    };
-
-    const handleChangeStartTime = (event) => {
-        setStartTime(event.target.value);
-    };
-
-    const handleChangeEndTime = (event) => {
-        setEndTime(event.target.value);
-    };
+    const updateNotify = () => toast.success('Roomreservation updated successfully!', {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    });
 
     return (
         <div className="addRoomreser">
@@ -105,101 +218,95 @@ const EditRoomreser = () => {
                 <form noValidate onSubmit={handleSubmit} >
                     <Typography
                         variant="h6">
-                        Edit Roomreservation
+                        Edit Room Reservation
                     </Typography>
-                    <FormControl fullWidth style={{ marginTop: "10px", marginBottom: "10px" }}>
-                        <InputLabel id="demo-simple-select-label">Rooms Name</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={roomName}
-                            label="Age"
-                            onChange={handleChangeRoomSelector}
-                            MenuProps={MenuProps}
-                        >
-                            {rooms.map((name) => (
-                                <MenuItem
-                                    key={name}
-                                    value={name}
-                                    style={getStyles(name, roomName, theme)}
-                                >
-                                    {name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
-                    <FormControl fullWidth style={{ marginTop: "10px", marginBottom: "10px" }}>
-                        <InputLabel id="demo-simple-select-label">Courses Name</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={courseName}
-                            label="Age"
-                            onChange={handleChangeCourseSelector}
-                            MenuProps={MenuProps}
-                        >
-                            {courses.map((name) => (
-                                <MenuItem
-                                    key={name}
-                                    value={name}
-                                    style={getStyles(name, roomName, theme)}
-                                >
-                                    {name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+
                     <TextField
-                        id="date"
+                        placeholder="Enter Room Name"
+                        label="Room Name"
+                        name="room"
+                        variant="outlined"
+                        className={classes.root}
+                        fullWidth
+                        required
+                        style={{
+                            marginTop: '10px',
+                            marginBottom: '10px',
+                        }}
+                        value={formValues.room.value}
+                        onChange={handleChange}
+                        error={formValues.room.error}
+                        helperText={formValues.room.error && formValues.room.errorMessage}
+                    />
+                    <TextField
+                        placeholder="Enter Course Name"
+                        label="Course Name"
+                        name="course"
+                        variant="outlined"
+                        className={classes.root}
+                        fullWidth
+                        required
+                        style={{
+                            marginTop: '10px',
+                            marginBottom: '10px',
+                        }}
+                        value={formValues.course.value}
+                        onChange={handleChange}
+                        error={formValues.course.error}
+                        helperText={formValues.course.error && formValues.course.errorMessage}
+                    />
+                    <TextField
+                        placeholder="Enter Date"
                         label="Date"
-                        type="date"
+                        name="date"
+                        variant="outlined"
+                        className={classes.root}
+                        fullWidth
+                        required
                         style={{
-                            width: '100%',
                             marginTop: '10px',
                             marginBottom: '10px',
                         }}
-                        defaultValue="2023-01-24"
-                        onChange={handleChangeDate}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
+                        value={formValues.date.value}
+                        onChange={handleChange}
+                        error={formValues.date.error}
+                        helperText={formValues.date.error && formValues.date.errorMessage}
                     />
                     <TextField
-                        id="time"
+                        placeholder="Enter Start Time"
                         label="Start Time"
-                        type="time"
-                        defaultValue="07:30"
+                        name="startTime"
+                        variant="outlined"
+                        className={classes.root}
+                        fullWidth
+                        required
                         style={{
-                            width: '100%',
                             marginTop: '10px',
                             marginBottom: '10px',
                         }}
-                        onChange={handleChangeStartTime}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        inputProps={{
-                            step: 300, // 5 min
-                        }}
+                        value={formValues.startTime.value}
+                        onChange={handleChange}
+                        error={formValues.startTime.error}
+                        helperText={formValues.startTime.error && formValues.startTime.errorMessage}
                     />
                     <TextField
-                        id="time"
+                        placeholder="Enter End Time"
                         label="End Time"
-                        type="time"
-                        defaultValue="07:30"
+                        name="endTime"
+                        variant="outlined"
+                        className={classes.root}
+                        fullWidth
+                        required
                         style={{
-                            width: '100%',
                             marginTop: '10px',
                             marginBottom: '10px',
                         }}
-                        onChange={handleChangeEndTime}
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        inputProps={{
-                            step: 300, // 5 min
-                        }}
+                        value={formValues.endTime.value}
+                        onChange={handleChange}
+                        error={formValues.endTime.error}
+                        helperText={formValues.endTime.error && formValues.endTime.errorMessage}
                     />
+
                     <Button
                         type="submit"
                         variant="outlined"
@@ -210,11 +317,24 @@ const EditRoomreser = () => {
                             color: 'white',
                         }}
                         endIcon={<KeyboardArrowRight />}
+                        onClick={updateRoomreser}
                     >
                         Edit
                     </Button>
                 </form>
             </Container>
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </div>
     )
 }

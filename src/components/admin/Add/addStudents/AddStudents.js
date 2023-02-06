@@ -2,11 +2,40 @@ import './AddStudents.css';
 import TextField from '@mui/material/TextField';
 import { Button, Container, Typography } from '@mui/material';
 import { KeyboardArrowRight } from '@material-ui/icons';
-import { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
+import { makeStyles } from "@material-ui/core/styles";
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
-
+const useStyles = makeStyles({
+    root: {
+        // input label when focused
+        "& label.Mui-focused": {
+            color: "#3ea175"
+        },
+        // focused color for input with variant='standard'
+        "& .MuiInput-underline:after": {
+            borderBottomColor: "#3ea175"
+        },
+        // focused color for input with variant='filled'
+        "& .MuiFilledInput-underline:after": {
+            borderBottomColor: "#3ea175"
+        },
+        // focused color for input with variant='outlined'
+        "& .MuiOutlinedInput-root": {
+            "&.Mui-focused fieldset": {
+                borderColor: "#3ea175"
+            }
+        }
+    }
+});
 
 const AddStudents = () => {
+    const [token, setToken] = useState();
+    const classes = useStyles();
+    const navigate = useNavigate();
     const [formValues, setFormValues] = useState({
         firstName: {
             value: '',
@@ -34,7 +63,7 @@ const AddStudents = () => {
             errorMessage: 'You must enter an password'
         },
         role: {
-            value: 0,
+            value: 2,
         },
     });
     const handleChange = (e) => {
@@ -48,7 +77,7 @@ const AddStudents = () => {
         })
     }
 
-    const handleSubmit = (e) => {
+    const addStudent = (e) => {
         e.preventDefault();
 
         const formFields = Object.keys(formValues);
@@ -69,14 +98,64 @@ const AddStudents = () => {
             }
 
         }
-        console.log(newFormValues);
-        setFormValues(newFormValues)
+        setFormValues(newFormValues);
+        axios.post('http://localhost:8000/users/createAccount', {
+            FirstName: formValues.firstName.value,
+            MiddleName: formValues.middleName.value,
+            LastName: formValues.lastName.value,
+            Username: formValues.username.value,
+            Password: formValues.password.value,
+            Role: formValues.role.value,
+        },{
+                headers: {
+                    "x-access-token": token
+                }
+        }).then((response) => {
+            if (response.data.message === "Account Created Successfully") {
+                notify();
+                setTimeout(() => {
+                    navigate('/');
+                }, 2000);
+            }else if(response.data.message === "Token expired"){
+                localStorage.removeItem("token");
+                window.location.reload();
+            }else if(response.data.message === "Not Allowed"){
+                localStorage.removeItem("token");
+                window.location.reload();
+            }
+        }).catch((error) => {
+            if (error.response.data.message === "Token expired") {
+                localStorage.removeItem("token");
+                window.location.reload();
+                navigate('/');
+            } else if (error.response.data.message === "Not Allowed") {
+                localStorage.removeItem("token");
+                window.location.reload();
+                navigate('/');
+            }
+        })
     }
+
+    const notify = () => toast.success('Student Created Successfully!', {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    });
+
+    useEffect(() => {
+        setToken(localStorage.getItem('token'));
+    }, []);
+    
     return (
         <div className="addStudents">
             <br />
             <Container className="container" >
-                <form noValidate onSubmit={handleSubmit} >
+                <form noValidate onSubmit={addStudent} >
                     <Typography
                         variant="h6">
                         Add Students
@@ -87,10 +166,13 @@ const AddStudents = () => {
                         label="FirstName"
                         name="firstName"
                         variant="outlined"
+                        className={classes.root}
                         fullWidth
                         required
-                        style={{ marginTop: '10px',
-                        marginBottom: '10px', }}
+                        style={{
+                            marginTop: '10px',
+                            marginBottom: '10px',
+                        }}
                         value={formValues.firstName.value}
                         onChange={handleChange}
                         error={formValues.firstName.error}
@@ -101,10 +183,13 @@ const AddStudents = () => {
                         label="MiddleName"
                         name="middleName"
                         variant="outlined"
+                        className={classes.root}
                         fullWidth
                         required
-                        style={{ marginTop: '10px',
-                        marginBottom: '10px', }}
+                        style={{
+                            marginTop: '10px',
+                            marginBottom: '10px',
+                        }}
                         value={formValues.middleName.value}
                         onChange={handleChange}
                         error={formValues.middleName.error}
@@ -115,10 +200,13 @@ const AddStudents = () => {
                         label="LastName"
                         name="lastName"
                         variant="outlined"
+                        className={classes.root}
                         fullWidth
                         required
-                        style={{ marginTop: '10px',
-                        marginBottom: '10px', }}
+                        style={{
+                            marginTop: '10px',
+                            marginBottom: '10px',
+                        }}
                         value={formValues.lastName.value}
                         onChange={handleChange}
                         error={formValues.lastName.error}
@@ -129,10 +217,13 @@ const AddStudents = () => {
                         label="Username"
                         name="username"
                         variant="outlined"
+                        className={classes.root}
                         fullWidth
                         required
-                        style={{ marginTop: '10px',
-                        marginBottom: '10px', }}
+                        style={{
+                            marginTop: '10px',
+                            marginBottom: '10px',
+                        }}
                         value={formValues.username.value}
                         onChange={handleChange}
                         error={formValues.username.error}
@@ -144,10 +235,13 @@ const AddStudents = () => {
                         label="Password"
                         name="password"
                         variant="outlined"
+                        className={classes.root}
                         fullWidth
                         required
-                        style={{ marginTop: '10px',
-                        marginBottom: '10px', }}
+                        style={{
+                            marginTop: '10px',
+                            marginBottom: '10px',
+                        }}
                         value={formValues.password.value}
                         onChange={handleChange}
                         error={formValues.password.error}
@@ -169,6 +263,18 @@ const AddStudents = () => {
                     </Button>
                 </form>
             </Container>
+            <ToastContainer
+                position="top-right"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </div>
     )
 }

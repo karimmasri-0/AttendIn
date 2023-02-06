@@ -1,8 +1,8 @@
-import "./Sidebar.css";
+import "./TeacherSidebar.css";
 import logo from "../../../assets/auth/AttendIn-logo-square.png";
 import { Link, useLocation } from "react-router-dom";
 
-const Sidebar = ({ sidebarOpen, closeSidebar }) => {
+const TeacherSidebar = ({ sidebarOpen, closeSidebar }) => {
     const pathname = useLocation().pathname;
 
     const logout = () => {
@@ -25,30 +25,10 @@ const Sidebar = ({ sidebarOpen, closeSidebar }) => {
             </div>
 
             <div className="sidebar__menu">
-                <div className={`sidebar__link ${pathname === "/monitoring" ? "active_menu_link" : ""
-                    }`}>
-                    <i class="fa fa-line-chart" aria-hidden="true"></i>
-                    <Link to={"/monitoring"}>Monitoring</Link>
-                </div>
                 <div className={`sidebar__link ${pathname === "/" ? "active_menu_link" : ""
                     }`}>
-                    <i className="fa fa-user"></i>
-                    <Link to={"/"}>Students</Link>
-                </div>
-                <div className={`sidebar__link ${pathname === "/teachers" ? "active_menu_link" : ""
-                    }`}>
-                    <i class="fa fa-users" aria-hidden="true"></i>
-                    <Link to={"/teachers"}>Teachers</Link>
-                </div>
-                <div className={`sidebar__link ${pathname === "/rooms" ? "active_menu_link" : ""
-                    }`}>
-                    <i className="fa fa-window-maximize" aria-hidden="true"></i>
-                    <Link to={"/rooms"}>Rooms</Link>
-                </div>
-                <div className={`sidebar__link ${pathname === "/roomreservation" ? "active_menu_link" : ""
-                    }`}>
-                    <i className="fa fa-window-restore" aria-hidden="true"></i>
-                    <Link to={"/roomreservation"}>Room Reservation</Link>
+                    <i className="fa fa-window-maximize"></i>
+                    <Link to={"/"}>Rooms</Link>
                 </div>
                 <br />
                 <br />
@@ -82,4 +62,4 @@ const Sidebar = ({ sidebarOpen, closeSidebar }) => {
     );
 };
 
-export default Sidebar;
+export default TeacherSidebar;

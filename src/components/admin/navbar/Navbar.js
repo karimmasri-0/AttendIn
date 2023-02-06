@@ -13,7 +13,9 @@ const Navbar = ({ sidebarOpen, openSidebar}) => {
         title = 'Rooms';
     } else if (title === 'roomreservation' || title === "addroomreservation" || title === "editroomreservation") {
         title = 'Room Reservation';
-    } else {
+    }else if(title === 'monitoring'){
+        title = 'Open Classrooms';
+    }else {
         title = 'Students';
     }
     return (

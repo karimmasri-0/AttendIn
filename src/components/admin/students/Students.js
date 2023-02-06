@@ -1,4 +1,5 @@
 import './Students.css';
+import { useEffect } from 'react';
 import React from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -13,25 +14,19 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-function createData(
-    fullName,
-    username,
-) {
-    return { fullName, username };
-}
 
-const rows = [
-    createData('Frozen yoghurt', "Frozen12"),
-    createData('Ice cream sandwich', "Icecream12"),
-    createData('Eclair', "Eclair12"),
-    createData('Cupcake', "Cupcake12"),
-    createData('Gingerbread', "Gingerbread12"),
-];
 
 const Students = () => {
-
+    const navigate = useNavigate();
+    const token = localStorage.getItem("token");
     const [open, setOpen] = React.useState(false);
+    const [students, setStudents] = React.useState([]);
+    const [studentID, setStudentID] = React.useState("");
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -41,10 +36,75 @@ const Students = () => {
         setOpen(false);
     };
 
-    const handleDelete = () => {
-        console.log('Delete');
+    const handleDelete = async ()  => {
+        await axios.delete(`http://localhost:8000/users/delete/${studentID}`, {
+            headers: {
+                "x-access-token": token
+            }
+        }).then((response) => {
+            if (response.data.message === "User was deleted successfully!") {
+                deleteNotify();
+                setStudents(students.filter((student) => student.id !== studentID));
+            } else if (response.data.message === "Token expired") {
+                localStorage.removeItem("token");
+                window.location.reload();
+            } else if (response.data.message === "Not Allowed") {
+                localStorage.removeItem("token");
+                window.location.reload();
+            } else {
+                toast.error('Could not delete User with id!', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
+            }
+        })
         setOpen(false);
     };
+
+    useEffect(() => {
+        axios.get('http://localhost:8000/users/students', {
+            headers: {
+                "x-access-token": token
+            }
+        }).then((response) => {
+            if (response.data.message === "Token expired") {
+                localStorage.removeItem("token");
+                window.location.reload();
+            } else if (response.data.message === "Not Allowed") {
+                localStorage.removeItem("token");
+                window.location.reload();
+            } else {
+                setStudents(response.data);
+            }
+        }).catch((error) => {
+            if (error.response.data.message === "Token expired") {
+                localStorage.removeItem("token");
+                window.location.reload();
+                navigate('/');
+            } else if (error.response.data.message === "Not Allowed") {
+                localStorage.removeItem("token");
+                window.location.reload();
+                navigate('/');
+            }
+        })
+    }, [token]);
+
+    const deleteNotify = () => toast.success('Student was deleted successfully!', {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    });
     return (
         <>
             <AddButton title="Add Students" path="/addstudents" />
@@ -55,29 +115,36 @@ const Students = () => {
                     <Table sx={{ minWidth: 650 }} aria-label="simple table">
                         <TableHead>
                             <TableRow>
-                                <TableCell style={{ color: '#9FA2B4' }}>Students Full Name</TableCell>
+                                <TableCell style={{ color: '#9FA2B4' }}>Students FirstName</TableCell>
+                                <TableCell style={{ color: '#9FA2B4' }}>Students LastName</TableCell>
                                 <TableCell style={{ color: '#9FA2B4' }} align="right">Students Username</TableCell>
                                 <TableCell style={{ color: '#9FA2B4' }} align="right">Edit</TableCell>
                                 <TableCell style={{ color: '#9FA2B4' }} align="right">Delete</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {rows.map((row) => (
+                            {students.map((student) => (
                                 <TableRow
-                                    key={row.name}
+                                    key={student.id}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                     <TableCell component="th" scope="row">
-                                        {row.fullName}
+                                        {student.FirstName}
                                     </TableCell>
-                                    <TableCell align="right">{row.username}</TableCell>
+                                    <TableCell component="th" scope="row">
+                                        {student.LastName}
+                                    </TableCell>
+                                    <TableCell align="right">{student.Username}</TableCell>
                                     <TableCell align="right">
-                                        <Link to="/editstudents">
-                                            <i style={{ color: "#75F94C", fontSize: "22px" }} class="fa fa-pencil" aria-hidden="true"></i>
+                                        <Link to={`/editstudents/${student.id}`}>
+                                            <i style={{ color: "#2C964A", fontSize: "22px" }} className="fa fa-pencil" aria-hidden="true"></i>
                                         </Link>
                                     </TableCell>
                                     <TableCell align="right">
-                                        <i onClick={handleClickOpen} style={{ color: "red", fontSize: "22px", cursor: 'pointer' }} class="fa fa-trash" aria-hidden="true"></i>
+                                        <i onClick={() => {
+                                            handleClickOpen();
+                                            setStudentID(student.id);
+                                        }} style={{ color: "red", fontSize: "22px", cursor: 'pointer' }} className="fa fa-trash" aria-hidden="true"></i>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -99,12 +166,24 @@ const Students = () => {
                         style={{ backgroundColor: 'red', color: "white" }}
                     >Cancel</Button>
                     <Button onClick={handleDelete} autoFocus
-                    style={{ backgroundColor: '#2C964A', color: "white" }}
+                        style={{ backgroundColor: '#2C964A', color: "white" }}
                     >
                         Delete
                     </Button>
                 </DialogActions>
             </Dialog>
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </>
     )
 }

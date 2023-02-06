@@ -2,11 +2,40 @@ import './AddRooms.css';
 import TextField from '@mui/material/TextField';
 import { Button, Container, Typography } from '@mui/material';
 import { KeyboardArrowRight } from '@material-ui/icons';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
+import { makeStyles } from "@material-ui/core/styles";
 import { useState } from 'react';
+import axios from 'axios';
 
-
+const useStyles = makeStyles({
+    root: {
+        // input label when focused
+        "& label.Mui-focused": {
+            color: "#3ea175"
+        },
+        // focused color for input with variant='standard'
+        "& .MuiInput-underline:after": {
+            borderBottomColor: "#3ea175"
+        },
+        // focused color for input with variant='filled'
+        "& .MuiFilledInput-underline:after": {
+            borderBottomColor: "#3ea175"
+        },
+        // focused color for input with variant='outlined'
+        "& .MuiOutlinedInput-root": {
+            "&.Mui-focused fieldset": {
+                borderColor: "#3ea175"
+            }
+        }
+    }
+});
 
 const AddRooms = () => {
+    const token = localStorage.getItem("token");
+    const classes = useStyles();
+    const navigate = useNavigate();
     const [formValues, setFormValues] = useState({
         roomName: {
             value: '',
@@ -35,7 +64,7 @@ const AddRooms = () => {
         })
     }
 
-    const handleSubmit = (e) => {
+    const addRooms = (e) => {
         e.preventDefault();
 
         const formFields = Object.keys(formValues);
@@ -56,24 +85,68 @@ const AddRooms = () => {
             }
 
         }
-        console.log(newFormValues);
-        setFormValues(newFormValues)
+        setFormValues(newFormValues);
+        axios.post('http://localhost:8000/rooms', {
+            Name: formValues.roomName.value,
+            Description: formValues.roomDescription.value,
+            Capacity: formValues.roomCapacity.value,
+        },{
+                headers: {
+                    "x-access-token": token
+                }
+        }).then((response) => {
+            if (response.data.message === "Room Created Successfully") {
+                notify();
+                setTimeout(() => {
+                    navigate('/rooms');
+                }, 2000);
+            }else if(response.data.message === "Token expired"){
+                localStorage.removeItem("token");
+                window.location.reload();
+            }else if(response.data.message === "Not Allowed"){
+                localStorage.removeItem("token");
+                window.location.reload();
+            }
+        }).catch((error) => {
+            if (error.response.data.message === "Token expired") {
+                localStorage.removeItem("token");
+                window.location.reload();
+                navigate('/');
+            } else if (error.response.data.message === "Not Allowed") {
+                localStorage.removeItem("token");
+                window.location.reload();
+                navigate('/');
+            }
+        })
     }
+
+    const notify = () => toast.success('Room Created Successfully!', {
+        position: "top-right",
+        autoClose: 1000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    });
+
     return (
         <div className="addRooms">
             <br />
             <Container className="container" >
-                <form noValidate onSubmit={handleSubmit} >
+                <form noValidate onSubmit={addRooms} >
                     <Typography
                         variant="h6">
                         Add Rooms
                     </Typography>
 
                     <TextField
-                        placeholder="Enter RoomName"
-                        label="RoomName"
+                        placeholder="Enter Room Name"
+                        label="Room Name"
                         name="roomName"
                         variant="outlined"
+                        className={classes.root}
                         fullWidth
                         required
                         style={{
@@ -90,6 +163,7 @@ const AddRooms = () => {
                         label="Room Description"
                         name="roomDescription"
                         variant="outlined"
+                        className={classes.root}
                         fullWidth
                         required
                         style={{
@@ -106,6 +180,7 @@ const AddRooms = () => {
                         label="Room Capacity"
                         name="roomCapacity"
                         variant="outlined"
+                        className={classes.root}
                         fullWidth
                         required
                         style={{
@@ -132,6 +207,18 @@ const AddRooms = () => {
                     </Button>
                 </form>
             </Container>
+            <ToastContainer
+                position="top-right"
+                autoClose={2000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </div>
     )
 }

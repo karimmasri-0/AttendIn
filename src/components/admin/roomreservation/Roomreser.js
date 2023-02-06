@@ -13,30 +13,20 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
+import { useEffect } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 
-
-function createData(
-    roomName,
-    coursesName,
-    date,
-    startTime,
-    endTime,
-) {
-    return { roomName, coursesName, date, startTime, endTime };
-}
-
-const rows = [
-    createData('Maths224', "Maths room", "25/2/2022", "10:00 AM", "12:00 PM"),
-    createData('Phy151', "Physics room", "10/2/2022", "1:00 PM", "3:00 PM"),
-    createData('Eng101', "English room", "25/1/2023", "9:00 AM", "12:00 PM"),
-    createData('CSCI200', "Web room", "25/1/2023", "9:00 AM", "12:00 PM"),
-    createData('Arab101', "Arabic room", "25/1/2023", "9:00 AM", "12:00 PM"),
-    createData('CSCI390', "Web Advanced room", "25/1/2023", "9:00 AM", "12:00 PM"),
-];
 
 const Roomreser = () => {
+    const navigate = useNavigate();
+    const token = localStorage.getItem("token");
     const [open, setOpen] = React.useState(false);
+    const [roomsreser, setRoomsreser] = React.useState([]);
+    const [roomsresrID, setRoomsreserID] = React.useState("");
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -47,9 +37,78 @@ const Roomreser = () => {
     };
 
     const handleDelete = () => {
-        console.log('Delete');
+        axios.delete(`http://localhost:8000/roomReservations/${roomsresrID}`,{
+                headers: {
+                    "x-access-token": token
+                }
+        }).then((response) => {
+            if (response.data.message === "RoomReservation was deleted successfully!") {
+                deleteNotify();
+                setRoomsreser(roomsreser.filter((roomrser) => roomrser.id !== roomsresrID));
+            }else{
+                toast.error('Could not delete Roomreservation!', {
+                    position: "top-right",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                });
+            }
+        }).catch((error) => {
+            if (error.response.data.message === "Token expired") {
+                localStorage.removeItem("token");
+                window.location.reload();
+                navigate('/');
+            } else if (error.response.data.message === "Not Allowed") {
+                localStorage.removeItem("token");
+                window.location.reload();
+                navigate('/');
+            }
+        })
         setOpen(false);
     };
+
+    useEffect(() => {
+        axios.get('http://localhost:8000/roomReservations', {
+            headers: {
+                "x-access-token": token
+            }
+        }).then((response) => {
+            if(response.data.message === "Token expired"){
+                localStorage.removeItem("token");
+                window.location.reload();
+            }else if(response.data.message === "Not Allowed"){
+                localStorage.removeItem("token");
+                window.location.reload();
+            }else{
+                setRoomsreser(response.data);
+            }
+        }).catch((error) => {
+            if (error.response.data.message === "Token expired") {
+                localStorage.removeItem("token");
+                window.location.reload();
+                navigate('/');
+            } else if (error.response.data.message === "Not Allowed") {
+                localStorage.removeItem("token");
+                window.location.reload();
+                navigate('/');
+            }
+        })
+    }, [token]);
+
+    const deleteNotify = () => toast.success('Roomreservation was deleted successfully!', {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    });
     return (
         <>
             <AddButton title="Add Roomreservation" path="/addroomreservation" />
@@ -59,7 +118,7 @@ const Roomreser = () => {
                 <TableContainer component={Paper}>
                     <Table sx={{ minWidth: 650 }} aria-label="simple table">
                         <TableHead>
-                            <TableRow>
+                        <TableRow>
                                 <TableCell style={{ color: '#9FA2B4' }}>Rooms Name</TableCell>
                                 <TableCell style={{ color: '#9FA2B4' }} align="right">Courses Name</TableCell>
                                 <TableCell style={{ color: '#9FA2B4' }} align="right">Date</TableCell>
@@ -70,25 +129,30 @@ const Roomreser = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {rows.map((row) => (
+                            {roomsreser.map((roomreser) => (
                                 <TableRow
-                                    key={row.name}
+                                    key={roomreser.id}
                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                 >
                                     <TableCell component="th" scope="row">
-                                        {row.roomName}
+                                        {roomreser.Room}
                                     </TableCell>
-                                    <TableCell align="right">{row.coursesName}</TableCell>
-                                    <TableCell align="right">{row.date}</TableCell>
-                                    <TableCell align="right">{row.startTime}</TableCell>
-                                    <TableCell align="right">{row.endTime}</TableCell>
+                                    <TableCell component="th" scope="row">
+                                        {roomreser.Course}
+                                    </TableCell>
+                                    <TableCell align="right">{roomreser.Date}</TableCell>
+                                    <TableCell align="right">{roomreser.STime}</TableCell>
+                                    <TableCell align="right">{roomreser.ETime}</TableCell>
                                     <TableCell align="right">
-                                        <Link to="/editroomreservation">
-                                            <i style={{ color: "#75F94C", fontSize: "22px" }} class="fa fa-pencil" aria-hidden="true"></i>
+                                        <Link to={`/editroomreservation/${roomreser.id}`}>
+                                            <i style={{ color: "#2C964A", fontSize: "22px" }} className="fa fa-pencil" aria-hidden="true"></i>
                                         </Link>
                                     </TableCell>
                                     <TableCell align="right">
-                                        <i onClick={handleClickOpen} style={{ color: "red", fontSize: "22px", cursor: 'pointer' }} class="fa fa-trash" aria-hidden="true"></i>
+                                        <i onClick={() => {
+                                            handleClickOpen();
+                                            setRoomsreserID(roomreser.id);
+                                        }} style={{ color: "red", fontSize: "22px", cursor: 'pointer' }} className="fa fa-trash" aria-hidden="true"></i>
                                     </TableCell>
                                 </TableRow>
                             ))}
@@ -103,7 +167,7 @@ const Roomreser = () => {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-dialog-title">
-                    {"Are you sure you want to delete this Roomreservation?"}
+                    {"Are you sure you want to delete this room?"}
                 </DialogTitle>
                 <DialogActions>
                     <Button onClick={handleClose}
@@ -116,6 +180,18 @@ const Roomreser = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </>
     )
 }
