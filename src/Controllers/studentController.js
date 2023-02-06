@@ -13,6 +13,7 @@ exports.studentSchedule = (req, res) => {
         else res.send(data);
     })
 }
+
 exports.createAttendance = (req, res) => {
     const UserId = req.body.UserId;
     const roomres = req.body.roomres;
