@@ -12,6 +12,18 @@ exports.getAllRoomReservations = (req, res) => {
         else res.send(data);
     })
 }
+exports.getAllRoomReservationsForTeacher = (req, res) => {
+    const {id} = req.params;
+    RoomReservation.allRoomReservationsForTeacher(id,(err, data) => {
+        console.log(err);
+        if (err) {
+            res.status(500).send({
+                message: err.message || "Some error occurred while retrieving RoomReservations."
+            });
+        }
+        else res.send(data);
+    })
+}
 exports.getSingleRoomReservation = (req, res) => {
     const id = req.params.id
     RoomReservation.findRoomReservationById(id, (err, data) => {

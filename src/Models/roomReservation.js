@@ -9,6 +9,18 @@ class RoomReservation {
         this.STime = STime;
         this.ETime = ETime;
     }
+    static allRoomReservationsForTeacher(id,result) {
+        connection.query("SELECT roomreservation.id, room.Name as Room, course.Name as Course,roomreservation.Date as Date,roomreservation.STime,roomreservation.ETime FROM roomreservation" +
+            " RIGHT JOIN room ON  roomreservation.RoomId = room.id" +
+            " RIGHT JOIN course ON  roomreservation.CourseId = course.id " +
+            "RIGHT JOIN user ON user.id = course.UserId WHERE user.id = ?",id, (err, res) => {
+                if (err) {
+                    result(null, err);
+                    return;
+                }
+                result(null, res);
+            })
+    }
     static allRoomReservations(result) {
         connection.query("SELECT roomreservation.id, room.Name as Room, course.Name as Course,roomreservation.Date as Date,roomreservation.STime,roomreservation.ETime FROM roomreservation" +
             " RIGHT JOIN room ON  roomreservation.RoomId = room.id" +

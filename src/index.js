@@ -1,6 +1,6 @@
 const app = require('./server');
 const server = require('./Controllers/monitoringController');
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 8000;
 const userRoutes = require('./Routes/user');
 const roomRoutes = require('./Routes/room');
 const roomReservRoutes = require('./Routes/roomReserv')
