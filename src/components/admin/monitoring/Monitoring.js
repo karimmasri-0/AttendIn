@@ -4,19 +4,15 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import { Button, Grid } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import ro from 'date-fns/esm/locale/ro/index.js';
 
 const Monitoring = () => {
-    const navigate = useNavigate();
     const token = localStorage.getItem("token");
     const [rooms, setRooms] = useState([]);
 
-    // axios all rooms, create function to updateStudents with parameter room.id to get the students number
 
-    useEffect(() => {
-        axios.get('http://localhost:8000/roomReservations', {
+    const getRooms = async () => {
+        await axios.get('http://localhost:8000/roomReservations', {
             headers: {
                 "x-access-token": token
             }
@@ -28,27 +24,19 @@ const Monitoring = () => {
                         capacity: 0,
                         maxCapacity: 30,
                         changed: false,
-                        isfull: false
+                        isfull: false,
+                        teacher: 'Not Available'
                     }
                 })
             )
         })
-
-        const interval = setInterval(() => {
-            updateStudents();
-        }
-            , 5000);
-
-        return () => clearInterval(interval);
-
-
-    }, [])
+    }
 
     // create function reused self to update the capacity of the rooms after 5 seconds
 
-    const updateStudents = () => {
-        rooms.map((room) => {
-            axios.get(`http://localhost:8000/monitoring/${room.id}`, {
+    const updateStudents = async () => {
+        rooms.map(async (room) => {
+            await axios.get(`http://localhost:8000/monitoring/${room.id}`, {
                 headers: {
                     "x-access-token": token
                 }
@@ -58,6 +46,7 @@ const Monitoring = () => {
                         room.changed = true;
                     }
                     room.capacity = response.data.data[0].Students;
+                    room.teacher = response.data.data[0].Teacher;
                     setTimeout(() => {
                         room.changed = false;
                     }, 1000);
@@ -65,12 +54,24 @@ const Monitoring = () => {
                 } else {
                     room.capacity = 0;
                     room.changed = false;
+                    room.teacher = 'Not Available';
                     setRooms([...rooms]);
                 }
             })
         })
     }
 
+    useEffect(() => {
+        
+        getRooms();
+
+        const interval = setInterval(() => {
+            updateStudents();
+        }, 5000);
+
+        return () => clearInterval(interval);
+
+    }, [token])
 
 
     // function to sum all capacity in rooms and calculate the percentage
@@ -93,7 +94,7 @@ const Monitoring = () => {
 
     return (
         <div style={{
-            margin: '0px 20px'
+            margin: '0px 20px 20px 20px'
         }}>
             <div style={{
                 width: '100%',
@@ -282,6 +283,12 @@ const Monitoring = () => {
                                         marginBottom: '10px',
                                     }} variant="body2" color="text.secondary">
                                         {room.Course}
+                                    </Typography>
+                                    <Typography style={{
+                                        marginBottom: '10px',
+                                        fontWeight: 'bold'
+                                    }} gutterBottom variant="body2" component="div">
+                                        {"Teacher: " + room.teacher}
                                     </Typography>
                                     <Typography style={{
                                         display: 'flex',

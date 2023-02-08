@@ -9,8 +9,11 @@ import { CardMedia } from '@material-ui/core';
 import { Grid } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import { createTheme } from '@mui/material/styles';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/material/Box';
+import jwt_decode from "jwt-decode";
 import QRCode from 'qrcode'
 import axios from 'axios';
 
@@ -32,6 +35,7 @@ const TeacherDashboard = () => {
     const [loading, setLoading] = useState(false);
     const [countDown, setCountDown] = useState(60);
     const [rooms, setRooms] = useState([]);
+    const [noClasses, setNoClasses] = useState(false);
 
     const countDownTime = () => {
         setTimeout(() => {
@@ -62,18 +66,85 @@ const TeacherDashboard = () => {
     }
 
     useEffect(() => {
-        axios.get("http://localhost:8000/teacher", {
-                headers: {
-                    "x-access-token": token
-                }
-            }).then((response) => {
-                setRooms(response.data)
-            })
+        const decoded = jwt_decode(token);
+        axios.get(`http://localhost:8000/teacher/${decoded.id}`, {
+            headers: {
+                "x-access-token": token
+            }
+        }).then((response) => {
+            if (response.data[0].id === null) {
+                setNoClasses(true);
+            } else {
+                setRooms(
+                    response.data.map((room) => {
+                        const date = new Date(room.Date.slice(0, 10));
+                        date.setDate(date.getDate() + 1);
+                        const newDate = date.toISOString().slice(0, 10);
+                        return {
+                            ...room,
+                            Date: newDate
+                        }
+                    })
+                )
+            }
+        })
     })
+
+    // function to check if date and start time is equal to current date and time to generate qr code
+
+    const checkDate = (id) => {
+        rooms.map((room) => {
+            const date = new Date();
+            const currentDate = date.toISOString().slice(0, 10);
+            const currentTime = date.toTimeString().slice(0, 5);
+            const startTime = room.STime.slice(0, 5);
+            if (currentDate === room.Date.slice(0, 10) && currentTime === startTime) {
+                GenerateQRCode(JSON.stringify(room), room.id)
+                stayQrCode()
+                countDownTime()
+            } else {
+                if (id === room.id) {
+                    toast.warning('No Class At This Time!!', {
+                        position: "top-right",
+                        autoClose: 1000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                    });
+                }
+            }
+        })
+    }
+
+
+
+
+
     return (
         <div style={{
             margin: '20px'
         }}>
+        {
+            noClasses ? (
+                <div style={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100vh'
+                }}>
+                    <Typography style={{
+                        color: '#3ea175',
+                        fontWeight: 'bold',
+                        fontSize: '30px'
+                    }} variant='h4'>
+                        No Classes Today
+                    </Typography>
+                </div>
+            ) : 
+            (
             <Grid container spacing={2}>
                 {
                     rooms.map((room) => (
@@ -140,14 +211,14 @@ const TeacherDashboard = () => {
                                     <Typography style={{
                                         marginTop: '5px',
                                     }} variant="body2" color="text.secondary">
-                                        {"Date: " + 
-                                        room.Date.slice(0, 10)
+                                        {"Date: " +
+                                            room.Date.slice(0, 10)
                                         }
                                     </Typography>
                                     <Typography style={{
                                         marginTop: '5px',
                                     }} variant="body2" color="text.secondary">
-                                        {"Time: " + room.STime.slice(0,5)  + " - " + room.ETime.slice(0,5) }
+                                        {"Time: " + room.STime.slice(0, 5) + " - " + room.ETime.slice(0, 5)}
                                     </Typography>
                                 </CardContent>
                                 <CardActions style={{
@@ -157,11 +228,11 @@ const TeacherDashboard = () => {
                                         backgroundColor: '#3ea175',
                                         color: 'white',
                                         padding: '10px 20px',
-                                    }} onClick={() => {
-                                        GenerateQRCode(JSON.stringify(room), room.id);
-                                        stayQrCode();
-                                        countDownTime();
-                                    }} size="small"
+                                    }} onClick={
+                                        () => {
+                                            checkDate(room.id);
+                                        }
+                                    } size="small"
                                         disabled={qr[0]?.id === room.id ? true : false}
                                     >Generate QR Code</Button>
                                 </CardActions>
@@ -170,6 +241,20 @@ const TeacherDashboard = () => {
                     ))
                 }
             </Grid>
+            )
+        }
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </div >
     );
 }
