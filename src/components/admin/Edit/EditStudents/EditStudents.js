@@ -105,7 +105,7 @@ const EditStudents = () => {
     }
 
     useEffect(() => {
-        axios.get(`http://localhost:8000/users/students/${params.id}`,{
+        axios.get(`http://${process.env.REACT_APP_SERVER_NAME}:8000/users/students/${params.id}`,{
             headers: {
                 "x-access-token": token
             }
@@ -151,7 +151,7 @@ const EditStudents = () => {
     }, [token, params.id])
 
     const updateStudent = () => {
-        axios.put(`http://localhost:8000/users/students/update/${params.id}`,{
+        axios.put(`http://${process.env.REACT_APP_SERVER_NAME}:8000/users/students/update/${params.id}`,{
             FirstName: formValues.firstName.value,
             MiddleName: formValues.middleName.value,
             LastName: formValues.lastName.value,

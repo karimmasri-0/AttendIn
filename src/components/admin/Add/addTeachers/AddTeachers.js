@@ -100,7 +100,7 @@ const AddTeachers = () => {
 
         }
         setFormValues(newFormValues)
-        axios.post('http://localhost:8000/users/createAccount', {
+        axios.post(`http://${process.env.REACT_APP_SERVER_NAME}:8000/users/createAccount`, {
             FirstName: formValues.firstName.value,
             MiddleName: formValues.middleName.value,
             LastName: formValues.lastName.value,

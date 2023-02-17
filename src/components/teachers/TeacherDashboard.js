@@ -67,7 +67,7 @@ const TeacherDashboard = () => {
 
     useEffect(() => {
         const decoded = jwt_decode(token);
-        axios.get(`http://localhost:8000/teacher/${decoded.id}`, {
+        axios.get(`http://${process.env.REACT_APP_SERVER_NAME}:8000/teacher/${decoded.id}`, {
             headers: {
                 "x-access-token": token
             }

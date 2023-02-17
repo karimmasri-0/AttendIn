@@ -12,7 +12,7 @@ const Monitoring = () => {
 
 
     const getRooms = async () => {
-        await axios.get('http://localhost:8000/roomReservations', {
+        await axios.get(`http://${process.env.REACT_APP_SERVER_NAME}:8000/roomReservations`, {
             headers: {
                 "x-access-token": token
             }
@@ -36,7 +36,7 @@ const Monitoring = () => {
 
     const updateStudents = async () => {
         rooms.map(async (room) => {
-            await axios.get(`http://localhost:8000/monitoring/${room.id}`, {
+            await axios.get(`http://${process.env.REACT_APP_SERVER_NAME}:8000/monitoring/${room.id}`, {
                 headers: {
                     "x-access-token": token
                 }
@@ -62,7 +62,7 @@ const Monitoring = () => {
     }
 
     useEffect(() => {
-        
+
         getRooms();
 
         const interval = setInterval(() => {
@@ -71,186 +71,21 @@ const Monitoring = () => {
 
         return () => clearInterval(interval);
 
-    }, [token])
+    }, [token]);
 
+    // function to calculate the percentage of the capacity of each room
 
-    // function to sum all capacity in rooms and calculate the percentage
-
-    function sumCapacity(rooms) {
-        let sum = 0;
-        rooms.forEach(room => {
-            sum += room.capacity;
-        });
-        return sum;
-    }
-
-    // function to calculate the percentage of the capacity
-
-    function percentage(rooms) {
-        let sum = sumCapacity(rooms);
-        let percentage = (sum / 200) * 100;
+    function percentageRoom(room) {
+        let percentage = (room.capacity / room.maxCapacity) * 100;
+        percentage = percentage.toFixed(0);
         return percentage;
     }
 
+
     return (
         <div style={{
-            margin: '0px 20px 20px 20px'
+            margin: '20px'
         }}>
-            <div style={{
-                width: '100%',
-                height: '50px',
-                margin: '10px 0px',
-                textAlign: 'left',
-                fontSize: '30px',
-                display: 'flex',
-                alignItems: 'center',
-                flexDirection: 'row',
-            }}>
-                <h2 style={{
-                    fontWeight: 'bold',
-                    fontSize: '30px',
-                }}>
-                    Total Statistics:
-                </h2>
-                <div style={
-                    percentage(rooms) > 20 ? {
-                        width: '20px',
-                        height: '20px',
-                        borderRadius: '50%',
-                        backgroundColor: '#FE2E2E',
-                        display: 'inline-block',
-                        margin: '0px 10px',
-                    }
-                        : {
-                            width: '20px',
-                            height: '20px',
-                            borderRadius: '50%',
-                            backgroundColor: '#494949',
-                            display: 'inline-block',
-                            margin: '0px 10px',
-                        }
-                }></div>
-                <div style={
-                    percentage(rooms) > 30 ? {
-                        width: '20px',
-                        height: '20px',
-                        borderRadius: '50%',
-                        backgroundColor: '#FF0000',
-                        display: 'inline-block',
-                        margin: '0px 10px',
-                    }
-                        : {
-                            width: '20px',
-                            height: '20px',
-                            borderRadius: '50%',
-                            backgroundColor: '#494949',
-                            display: 'inline-block',
-                            margin: '0px 10px',
-                        }
-                }></div>
-                <div style={
-                    percentage(rooms) > 50 ? {
-                        width: '25px',
-                        height: '25px',
-                        borderRadius: '50%',
-                        backgroundColor: '#81F781',
-                        display: 'inline-block',
-                        margin: '0px 10px',
-                    } : {
-                        width: '25px',
-                        height: '25px',
-                        borderRadius: '50%',
-                        backgroundColor: '#494949',
-                        display: 'inline-block',
-                        margin: '0px 10px',
-                    }
-                }></div>
-                <div style={
-                    percentage(rooms) > 60 ? {
-                        width: '25px',
-                        height: '25px',
-                        borderRadius: '50%',
-                        backgroundColor: '#58FA58',
-                        display: 'inline-block',
-                        margin: '0px 10px',
-                    } : {
-                        width: '25px',
-                        height: '25px',
-                        borderRadius: '50%',
-                        backgroundColor: '#494949',
-                        display: 'inline-block',
-                        margin: '0px 10px',
-                    }
-                }></div>
-                <div style={
-                    percentage(rooms) > 80 ? {
-                        width: '30px',
-                        height: '30px',
-                        borderRadius: '50%',
-                        backgroundColor: '#2EFE2E',
-                        display: 'inline-block',
-                        margin: '0px 10px',
-                    } : {
-                        width: '30px',
-                        height: '30px',
-                        borderRadius: '50%',
-                        backgroundColor: '#494949',
-                        display: 'inline-block',
-                        margin: '0px 10px',
-                    }
-                }></div>
-                <div style={
-                    percentage(rooms) >= 100 ? {
-                        width: '30px',
-                        height: '30px',
-                        borderRadius: '50%',
-                        backgroundColor: '#F4FA58',
-                        display: 'inline-block',
-                        margin: '0px 10px',
-                    } : {
-                        width: '30px',
-                        height: '30px',
-                        borderRadius: '50%',
-                        backgroundColor: '#494949',
-                        display: 'inline-block',
-                        margin: '0px 10px',
-                    }
-                }></div>
-                <div style={
-                    percentage(rooms) > 110 ? {
-                        width: '35px',
-                        height: '35px',
-                        borderRadius: '50%',
-                        backgroundColor: '#F7FE2E',
-                        display: 'inline-block',
-                        margin: '0px 10px',
-                    } : {
-                        width: '35px',
-                        height: '35px',
-                        borderRadius: '50%',
-                        backgroundColor: '#494949',
-                        display: 'inline-block',
-                        margin: '0px 10px',
-                    }
-                }></div>
-                <div style={
-                    percentage(rooms) > 120 ? {
-                        width: '35px',
-                        height: '35px',
-                        borderRadius: '50%',
-                        backgroundColor: '#FFFF00',
-                        display: 'inline-block',
-                        margin: '0px 10px',
-                    } : {
-                        width: '35px',
-                        height: '35px',
-                        borderRadius: '50%',
-                        backgroundColor: '#494949',
-                        display: 'inline-block',
-                        margin: '0px 10px',
-                    }
-                }></div>
-            </div>
             <Grid container spacing={2}>
                 {
                     rooms.map((room) => (
@@ -322,6 +157,97 @@ const Monitoring = () => {
                                                 backgroundColor: '#494949',
                                             }
                                         }></div>
+                                    </Typography>
+                                    <Typography style={{
+                                        marginTop: '10px',
+                                        fontWeight: 'bold'
+                                    }} gutterBottom variant="body2" component="div">
+                                        {
+                                            <div style={{
+                                                width: '100%',
+                                                height: '50px',
+                                                margin: '0px',
+                                                textAlign: 'center',
+                                                fontSize: '30px',
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                flexDirection: 'row',
+                                            }}>
+                                                <div style={
+                                                    percentageRoom(room) >= 10 ? {
+                                                        width: '20px',
+                                                        height: '20px',
+                                                        borderRadius: '50%',
+                                                        backgroundColor: '#FE2E2E',
+                                                        display: 'inline-block',
+                                                        margin: '0px 10px',
+                                                    }
+                                                        : {
+                                                            width: '20px',
+                                                            height: '20px',
+                                                            borderRadius: '50%',
+                                                            backgroundColor: '#494949',
+                                                            display: 'inline-block',
+                                                            margin: '0px 10px',
+                                                        }
+                                                }></div>
+                                                <div style={
+                                                    percentageRoom(room) >= 30 ? {
+                                                        width: '20px',
+                                                        height: '20px',
+                                                        borderRadius: '50%',
+                                                        backgroundColor: '#FF0000',
+                                                        display: 'inline-block',
+                                                        margin: '0px 10px',
+                                                    }
+                                                        : {
+                                                            width: '20px',
+                                                            height: '20px',
+                                                            borderRadius: '50%',
+                                                            backgroundColor: '#494949',
+                                                            display: 'inline-block',
+                                                            margin: '0px 10px',
+                                                        }
+                                                }></div>
+                                                <div style={
+                                                    percentageRoom(room) >= 60 ? {
+                                                        width: '20px',
+                                                        height: '20px',
+                                                        borderRadius: '50%',
+                                                        backgroundColor: '#81F781',
+                                                        display: 'inline-block',
+                                                        margin: '0px 10px',
+                                                    }
+                                                        : {
+                                                            width: '20px',
+                                                            height: '20px',
+                                                            borderRadius: '50%',
+                                                            backgroundColor: '#494949',
+                                                            display: 'inline-block',
+                                                            margin: '0px 10px',
+                                                        }
+                                                }></div>
+                                                <div style={
+                                                    percentageRoom(room) >= 100 ? {
+                                                        width: '20px',
+                                                        height: '20px',
+                                                        borderRadius: '50%',
+                                                        backgroundColor: '#2EFE2E',
+                                                        display: 'inline-block',
+                                                        margin: '0px 10px',
+                                                    }
+                                                        : {
+                                                            width: '20px',
+                                                            height: '20px',
+                                                            borderRadius: '50%',
+                                                            backgroundColor: '#494949',
+                                                            display: 'inline-block',
+                                                            margin: '0px 10px',
+                                                        }
+                                                }></div>
+                                            </div>
+                                        }
                                     </Typography>
                                     {
                                         room.isfull ? (<Button variant="contained" style={{

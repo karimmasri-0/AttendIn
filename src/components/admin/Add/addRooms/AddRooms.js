@@ -86,7 +86,7 @@ const AddRooms = () => {
 
         }
         setFormValues(newFormValues);
-        axios.post('http://localhost:8000/rooms', {
+        axios.post(`http://${process.env.REACT_APP_SERVER_NAME}:8000/rooms`, {
             Name: formValues.roomName.value,
             Description: formValues.roomDescription.value,
             Capacity: formValues.roomCapacity.value,

@@ -37,7 +37,7 @@ const Students = () => {
     };
 
     const handleDelete = async ()  => {
-        await axios.delete(`http://localhost:8000/users/delete/${studentID}`, {
+        await axios.delete(`http://${process.env.REACT_APP_SERVER_NAME}:8000/users/delete/${studentID}`, {
             headers: {
                 "x-access-token": token
             }
@@ -68,7 +68,7 @@ const Students = () => {
     };
 
     useEffect(() => {
-        axios.get('http://localhost:8000/users/students', {
+        axios.get(`http://${process.env.REACT_APP_SERVER_NAME}:8000/users/students`, {
             headers: {
                 "x-access-token": token
             }

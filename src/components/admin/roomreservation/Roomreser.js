@@ -37,7 +37,7 @@ const Roomreser = () => {
     };
 
     const handleDelete = () => {
-        axios.delete(`http://localhost:8000/roomReservations/${roomsresrID}`,{
+        axios.delete(`http://${process.env.REACT_APP_SERVER_NAME}:8000/roomReservations/${roomsresrID}`,{
                 headers: {
                     "x-access-token": token
                 }
@@ -72,7 +72,7 @@ const Roomreser = () => {
     };
 
     useEffect(() => {
-        axios.get('http://localhost:8000/roomReservations', {
+        axios.get(`http://${process.env.REACT_APP_SERVER_NAME}:8000/roomReservations`, {
             headers: {
                 "x-access-token": token
             }

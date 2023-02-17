@@ -30,7 +30,7 @@ function Login() {
                 theme: "light",
             });
         } else {
-            axios.post('http://localhost:8000/login', {
+            axios.post(`http://${process.env.REACT_APP_SERVER_NAME}:8000/login`, {
                 Username: email,
                 Password: password
             }).then((response) => {

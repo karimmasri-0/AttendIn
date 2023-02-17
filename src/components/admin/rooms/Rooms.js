@@ -37,7 +37,7 @@ const Rooms = () => {
     };
 
     const handleDelete = () => {
-        axios.delete(`http://localhost:8000/rooms/${roomsID}`, {
+        axios.delete(`http://${process.env.REACT_APP_SERVER_NAME}:8000/rooms/${roomsID}`, {
             headers: {
                 "x-access-token": token
             }
@@ -73,7 +73,7 @@ const Rooms = () => {
     };
 
     useEffect(() => {
-        axios.get('http://localhost:8000/rooms', {
+        axios.get(`http://${process.env.REACT_APP_SERVER_NAME}:8000/rooms`, {
             headers: {
                 "x-access-token": token
             }

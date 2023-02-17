@@ -91,7 +91,7 @@ const EditRooms = () => {
     }
 
     useEffect(() => {
-        axios.get(`http://localhost:8000/rooms/${params.id}`,{
+        axios.get(`http://${process.env.REACT_APP_SERVER_NAME}:8000/rooms/${params.id}`,{
             headers: {
                 "x-access-token": token
             }
@@ -127,7 +127,7 @@ const EditRooms = () => {
     }, [token,params.id])
 
     const updateRoom = () => {
-        axios.put(`http://localhost:8000/rooms/${params.id}`,{
+        axios.put(`http://${process.env.REACT_APP_SERVER_NAME}:8000/rooms/${params.id}`,{
             Name: formValues.roomName.value,
             Description: formValues.roomDescription.value,
             Capacity: formValues.roomCapacity.value,

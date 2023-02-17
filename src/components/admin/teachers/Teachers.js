@@ -36,7 +36,7 @@ const Teachers = () => {
     };
 
     const handleDelete = () => {
-        axios.delete(`http://localhost:8000/users/delete/${teacherID}`, {
+        axios.delete(`http://${process.env.REACT_APP_SERVER_NAME}:8000/users/delete/${teacherID}`, {
             headers: {
                 "x-access-token": token
             }
@@ -82,7 +82,7 @@ const Teachers = () => {
     };
 
     useEffect(() => {
-        axios.get('http://localhost:8000/users/teachers', {
+        axios.get(`http://${process.env.REACT_APP_SERVER_NAME}:8000/users/teachers`, {
             headers: {
                 "x-access-token": token
             }
