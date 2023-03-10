@@ -3,7 +3,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
-import {ThemeContext} from '../ThemeContext';
+import {ThemeContext} from '../theme/ThemeContext';
 import {Toast} from 'react-native-toast-message/lib/src/Toast';
 
 const HomeHeader = () => {
@@ -24,10 +24,8 @@ const HomeHeader = () => {
 
   const getAsyncStorageData = async (key, setState) => {
     try {
-      const value = await AsyncStorage.getItem(key).then(res => {
-        setState(JSON.parse(res));
-      });
-      return value;
+      const response = await AsyncStorage.getItem(key);
+      setState(JSON.parse(response));
     } catch (error) {
       console.log(error);
     }
@@ -38,13 +36,17 @@ const HomeHeader = () => {
   }, []);
 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem('@access_token');
-    await AsyncStorage.removeItem('@user_data');
-    Toast.show({
-      type: 'error',
-      text1: 'You were singed out.',
-    });
-    navigation.navigate('login');
+    try {
+      await AsyncStorage.removeItem('@access_token');
+      await AsyncStorage.removeItem('@user_data');
+      Toast.show({
+        type: 'error',
+        text1: 'You were singed out.',
+      });
+      navigation.navigate('login');
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (

@@ -1,8 +1,8 @@
-import {StyleSheet, View, Text, Pressable} from 'react-native';
+import {View, Text, Pressable} from 'react-native';
 import Animated, {FadeInUp, FadeOutUp} from 'react-native-reanimated';
 import React, {useContext} from 'react';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import {ThemeContext} from '../ThemeContext';
+import {ThemeContext} from '../theme/ThemeContext';
 
 const Toaster = ({error, state, title, body, icon}) => {
   const {themeTools, fonts} = useContext(ThemeContext);
@@ -88,5 +88,3 @@ const Toaster = ({error, state, title, body, icon}) => {
 };
 
 export default Toaster;
-
-const styles = StyleSheet.create({});

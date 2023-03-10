@@ -1,6 +1,6 @@
 import {StyleSheet, ActivityIndicator, View, useContext} from 'react-native';
 import React from 'react';
-import {ThemeContext} from '../ThemeContext';
+import {ThemeContext} from '../theme/ThemeContext';
 
 const Loading = () => {
   const {themeTools} = useContext(ThemeContext);

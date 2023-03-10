@@ -2,12 +2,12 @@ import {SafeAreaView, StatusBar, StyleSheet, Text, View} from 'react-native';
 import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Login from './android/app/src/components/Login';
 import Toast from 'react-native-toast-message';
-import Home from './android/app/src/components/Home';
-import LoginTemp from './android/app/src/components/LoginTemp';
-import {ThemeProvider} from './android/app/src/ThemeContext';
+import Home from './android/app/src/views/home';
+import LoginTemp from './android/app/src/views/launch';
+import {ThemeProvider} from './android/app/src/theme/ThemeContext';
 import HomeHeader from './android/app/src/components/HomeHeader';
+import Login from './android/app/src/views/login';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
